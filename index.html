@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday, Cy!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #87CEEB, #73C2FB);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            color: #1a5276;
+        }
+
+        /* Password Modal */
+        .password-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(135, 206, 235, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 0.5s ease;
+        }
+
+        .password-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            animation: bounceIn 1s forwards;
+        }
+
+        .password-content h2 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #3498DB;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #73C2FB;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 16px;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .password-input:focus { border-color: #3498DB; }
+
+        .submit-btn {
+            background: #3498DB;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .submit-btn:hover { background: #2980B9; transform: scale(1.05); }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #87CEEB, #73C2FB);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99;
+            transition: opacity 0.8s ease;
+        }
+
+        .welcome-message {
+            font-family: 'Dancing Script', cursive;
+            font-size: 48px;
+            color: #1A5276;
+            text-align: center;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Main Content */
+        .container {
+            width: 100%;
+            max-width: 900px;
+            padding: 20px;
+            margin-top: 50px;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            background: rgba(255,255,255,0.7);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #3498DB;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab:hover { background: rgba(255,255,255,0.9); transform: translateY(-3px); }
+
+        .tab.active {
+            background: white;
+            color: #3498DB;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .content-area {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            min-height: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+            position: relative;
+            border-radius: 20px;
+            min-height: 100vh; /* ✅ ensure it fills full tab height */
+        }
+
+        .tab-content.active { display: block; }
+
+        /* Tab-specific backgrounds using local files */
+        #love-letter {
+            background: url('images/loveletter-bg.jpg') no-repeat center center;
+            background-size: cover; /* ✅ makes it cover entire tab */
+        }
+
+        #gallery {
+            background: url('images/gallery-bg.jpg') no-repeat center center;
+            background-size: cover; /* ✅ */
+        }
+
+        #clickme {
+            background: url('images/clickme-bg.jpg') no-repeat center center;
+            background-size: cover; /* ✅ */
+        }
+
+        /* Overlay for readability */
+        .tab-content::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.7);
+            z-index: 0;
+            border-radius: 20px;
+        }
+
+        .tab-content > * { position: relative; z-index: 1; }
+
+        /* Love Letter Tab */
+        .letter {
+            padding: 20px;
+            background: #E8F6F3;
+            border-radius: 15px;
+            border: 2px dashed #73C2FB;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .letter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .letter h3 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 28px;
+            color: #3498DB;
+        }
+
+        .letter-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+            text-align: center;
+        }
+
+        .letter-content p {
+            margin-bottom: 18px;
+            line-height: 1.8;
+        }
+
+        .letter.expanded .letter-content { max-height: 2000px; }
+
+        /* Notes Tab */
+        .note {
+            background: #D6EAF8;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498DB;
+        }
+
+        /* Gallery Tab */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .gallery-item {
+            border-radius: 10px;
+            overflow: hidden;
+            height: 200px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover { transform: scale(1.05); }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Birthday Elements */
+        .floating-birthday {
+            position: absolute;
+            font-size: 28px;
+            animation: float 6s ease-in-out infinite;
+            z-index: -1;
+            opacity: 0.25;
+            pointer-events: none;
+        }
+
+        /* Confetti */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #fbc02d;
+            pointer-events: none;
+            animation: confettiFall linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(0) rotate(0deg); opacity:1; }
+            100% { transform: translateY(600px) rotate(360deg); opacity:0; }
+        }
+
+        /* Animations */
+        @keyframes bounceIn { 0%{transform:scale(0.8);opacity:0}60%{transform:scale(1.05)}100%{transform:scale(1);opacity:1} }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+        @keyframes pulse { 0%{transform:scale(1);}50%{transform:scale(1.05);}100%{transform:scale(1);} }
+        @keyframes float { 0%{transform:translateY(0px);}50%{transform:translateY(-10px);}100%{transform:translateY(0px);} }
+        @keyframes wobble { 0%{transform:rotate(0deg);}25%{transform:rotate(3deg);}50%{transform:rotate(0deg);}75%{transform:rotate(-3deg);}100%{transform:rotate(0deg);} }
+
+        /* Floating Music Button */
+        #musicToggle {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border: none;
+            border-radius: 50%;
+            background: #87CEEB;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Responsive Design */
+        @media (max-width:768px) {
+            .welcome-message { font-size:36px; }
+            .tabs { flex-direction: column; align-items: center; }
+            .tab { width:100%; justify-content:center; }
+            .gallery { grid-template-columns: repeat(2,1fr); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Password Modal -->
+    <div class="password-modal" id="passwordModal">
+        <div class="password-content">
+            <h2>Enter the secret code</h2>
+            <input type="password" class="password-input" id="passwordInput" placeholder="Our special word...">
+            <button class="submit-btn" id="submitPassword">Enter</button>
+        </div>
+    </div>
+
+    <!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <h1 class="welcome-message">Happy 18th Birthday, Cyrean!</h1>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container" id="mainContent" style="display: none;">
+        <div class="tabs">
+            <button class="tab active" data-tab="love-letter"><span>🎂</span> Birthday Letter</button>
+            <button class="tab" data-tab="gallery"><span>🎁</span> Sweet Petals</button>
+            <button class="tab" data-tab="clickme"><span>✨</span> Click Me</button>
+        </div>
+
+        <div class="content-area">
+            <!-- Birthday Letter Tab -->
+            <div class="tab-content active" id="love-letter">
+                <h2>Happy Birthday!</h2>
+                <div class="letter" id="loveLetter">
+                    <div class="letter-header">
+                        <h3>From Nielle</h3>
+                        <span>👇 Click to open</span>
+                    </div>
+                    <div class="letter-content">
+                        <p>Hi Cy! first of all, happy happy birthday! Seryoso, deserve mo lahat ng love, saya, at blessings today at sa araw-araw rin. Ang dami mong pinapakita na strength at effort, kahit minsan feeling mo hindi enough, I want you to know na you’re already doing such a good job and for that, I am proud of youu :))</p>
+                        <p>Proud ako sa’yo, Cy, dahil sa lahat ng bagay na na-achieve mo, kahit ‘yung mga simpleng bagay na hindi mo napapansin, malaking bagay ‘yon. And the way you handle things kahit may pagsubok, grabe, ang lakas mo. Pero Cy, reminder lang din na hindi mo kailangang palaging maging malakas, okay lang mapagod at okay lang magpahinga.</p>
+                        <p>Be gentle with yourself, Cy. Hindi mo kailangan i-rush lahat, hindi mo rin kailangang i-pressure sarili mo palagi. Sapat ka na at sobra pa nga. Also, stay hydrated, please? Alam ko lagi kong sinasabi pero seryoso, importante ‘yan. Huwag puro softdrinks at mag ka tubig din. Don’t pressure yourself masyado coz life is not a race. Take your time, step by step. May tamang timing para sa lahat. And always remember, it’s okay to rest. Hindi selfish ang magpahinga, hindi ka mahina kapag nagpapa-heal ka. You deserve peace, love, and happiness.</p>
+                        <p>Sana habang binabasa mo ‘to, napapangiti ka, kasi you deserve to smile not just today but everyday. Alam kong minsan nakakapagod, minsan parang kulang, pero Cy, you’re more than enough. Andito ako lagi, cheerleader mo at kakampi mo forever.</p>
+                        <p>So today, enjoy your special day, Cy! Kumain ka at magpakabusog, tumawa ka nang malakas, gawin mo lahat ng nagpapasaya sa’yo. You deserve to celebrate yourself kasi you’re such a blessing sa lahat ng tao sa paligid mo.</p>
+                        <p>Happy birthday ulit, Cyrean! Sana this year magdala sa’yo ng mas maraming reasons to smile, more peace of mind, more love, at more moments na marerealize mo how special you really are.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gallery Tab -->
+            <div class="tab-content" id="gallery">
+                <h2>Every petal reflects a piece of your heart</h2>
+                <div class="gallery">
+                    <div class="gallery-item"><img src="images/surprise1.jpg" alt="Surprise 1"></div>
+                    <div class="gallery-item"><img src="images/surprise2.jpg" alt="Surprise 2"></div>
+                    <div class="gallery-item"><img src="images/surprise3.jpg" alt="Surprise 3"></div>
+                    <div class="gallery-item"><img src="images/surprise4.jpg" alt="Surprise 4"></div>
+                    <div class="gallery-item"><img src="images/surprise5.jpg" alt="Surprise 5"></div>
+                    <div class="gallery-item"><img src="images/surprise6.jpg" alt="Surprise 6"></div>
+                    <div class="gallery-item"><img src="images/surprise7.jpg" alt="Surprise 7"></div>
+                    <div class="gallery-item"><img src="images/surprise8.jpg" alt="Surprise 8"></div>
+                    <div class="gallery-item"><img src="images/surprise9.jpg" alt="Surprise 9"></div>
+                    <div class="gallery-item"><img src="images/surprise10.jpg" alt="Surprise 10"></div>
+                    <div class="gallery-item"><img src="images/surprise11.jpg" alt="Surprise 11"></div>
+                    <div class="gallery-item"><img src="images/surprise12.jpg" alt="Surprise 12"></div>
+                    <div class="gallery-item"><img src="images/surprise13.jpg" alt="Surprise 13"></div>
+                    <div class="gallery-item"><img src="images/surprise14.jpg" alt="Surprise 14"></div>
+                    <div class="gallery-item"><img src="images/surprise15.jpg" alt="Surprise 15"></div>
+                    <div class="gallery-item"><img src="images/surprise16.jpg" alt="Surprise 16"></div>
+                    <div class="gallery-item"><img src="images/surprise17.jpg" alt="Surprise 17"></div>
+                    <div class="gallery-item"><img src="images/surprise18.jpg" alt="Surprise 18"></div>
+                </div>
+            </div>
+
+            <!-- Click Me Tab -->
+            <div class="tab-content" id="clickme">
+                <h2>I have more surprise for you 🎉</h2>
+                <p style="margin-top:15px;">
+                    <a href="https://nezu.my.canva.site/cyrean18" target="_blank" style="color:#3498DB; font-weight:bold; text-decoration:none;">💙 Click here to see 💙</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Birthday elements -->
+    <div id="birthdayElements"></div>
+
+    <!-- Background Music -->
+    <audio id="bgMusic" src="song.mp3" loop></audio>
+    <button id="musicToggle">⏸</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordModal = document.getElementById('passwordModal');
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            const mainContent = document.getElementById('mainContent');
+            const passwordInput = document.getElementById('passwordInput');
+            const submitPassword = document.getElementById('submitPassword');
+            const correctPassword = "cyrean@18";
+
+            submitPassword.addEventListener('click', () => {
+                if (passwordInput.value === correctPassword) {
+                    passwordModal.style.opacity = 0;
+                    setTimeout(() => {
+                        passwordModal.style.display = 'none';
+                        welcomeScreen.style.display = 'flex';
+                        setTimeout(() => {
+                            welcomeScreen.style.opacity = 0;
+                            setTimeout(() => {
+                                welcomeScreen.style.display = 'none';
+                                mainContent.style.display = 'block';
+                                startConfetti();
+                                createFloatingElements();
+                                document.getElementById('musicToggle').style.display = 'flex';
+                                document.getElementById('bgMusic').play();
+                            }, 800);
+                        }, 2000);
+                    }, 500);
+                } else {
+                    alert("Incorrect password! Try again ❤️");
+                }
+            });
+
+            // Tabs
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab).classList.add('active');
+                });
+            });
+
+            // Expand/Collapse Letter
+            const loveLetter = document.getElementById('loveLetter');
+            loveLetter.addEventListener('click', () => {
+                loveLetter.classList.toggle('expanded');
+            });
+
+            // Background Music Toggle
+            const musicToggle = document.getElementById('musicToggle');
+            const bgMusic = document.getElementById('bgMusic');
+            musicToggle.addEventListener('click', () => {
+                if (bgMusic.paused) {
+                    bgMusic.play();
+                    musicToggle.textContent = '⏸';
+                } else {
+                    bgMusic.pause();
+                    musicToggle.textContent = '▶️';
+                }
+            });
+
+            // Confetti
+            function startConfetti() {
+                const confettiCount = 150;
+                for (let i = 0; i < confettiCount; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.classList.add('confetti');
+                    confetti.style.left = Math.random() * window.innerWidth + 'px';
+                    confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                    confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    confetti.style.opacity = Math.random();
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    confetti.style.top = '-10px';
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 5000);
+                }
+            }
+
+            // Floating Elements
+            function createFloatingElements() {
+                const elements = ['🎈','🎂','⭐','🌸','💖'];
+                for (let i = 0; i < 15; i++) {
+                    const el = document.createElement('div');
+                    el.className = 'floating-birthday';
+                    el.textContent = elements[Math.floor(Math.random() * elements.length)];
+                    el.style.left = Math.random() * window.innerWidth + 'px';
+                    el.style.top = Math.random() * window.innerHeight + 'px';
+                    el.style.animationDuration = (Math.random() * 5 + 3) + 's';
+                    document.getElementById('birthdayElements').appendChild(el);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
